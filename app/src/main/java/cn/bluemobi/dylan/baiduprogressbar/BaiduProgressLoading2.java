@@ -2,12 +2,14 @@ package cn.bluemobi.dylan.baiduprogressbar;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
+import android.animation.FloatEvaluator;
 import android.animation.PropertyValuesHolder;
+import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
@@ -15,29 +17,30 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by dylan on 2016-12-04.
  */
 
-public class BaiduProgressLoading extends FrameLayout {
+public class BaiduProgressLoading2 extends FrameLayout {
 
     /**
      * 存放三个小球的集合
      */
     private List<ImageView> views = new ArrayList<>();
 
-    public BaiduProgressLoading(Context context) {
+    public BaiduProgressLoading2(Context context) {
         super(context);
         init();
     }
 
-    public BaiduProgressLoading(Context context, AttributeSet attrs) {
+    public BaiduProgressLoading2(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public BaiduProgressLoading(Context context, AttributeSet attrs, int defStyleAttr) {
+    public BaiduProgressLoading2(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -61,22 +64,31 @@ public class BaiduProgressLoading extends FrameLayout {
 
     PointF point = new PointF();
 
+
+    private class MyEvaluor extends FloatEvaluator {
+        @Override
+        public Float evaluate(float fraction, Number startValue, Number endValue) {
+            Log.d("MyEvaluor", "fraction=" + fraction + ";startValue=" + startValue + "endValue=" + endValue);
+            return super.evaluate(fraction, startValue, endValue);
+        }
+    }
+
+    /**
+     * ﻿﻿
+     * 圆点坐标：(x0,y0)
+     * 半径：r
+     * 角度：a0
+     * 则圆上任一点为：（x1,y1）
+     * x1   =   x0   +   r   *   cos(ao   *   3.14   /180   )
+     * y1   =   y0   +   r   *   sin(ao   *   3.14   /180   )
+     */
     private void startAnimator1() {
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(90, 360);
+        valueAnimator.setEvaluator(new MyEvaluor());
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float value = (Float) animation.getAnimatedValue();
-                /**
-                 * ﻿﻿
-                 * 圆点坐标：(x0,y0)
-                 * 半径：r
-                 * 角度：a0
-                 * 则圆上任一点为：（x1,y1）
-                 * x1   =   x0   +   r   *   cos(ao   *   3.14   /180   )
-                 * y1   =   y0   +   r   *   sin(ao   *   3.14   /180   )
-                 */
-                /**第四步，根据每个菜单真实角度计算其坐标值**/
                 point.x = (float) Math.cos(value * (Math.PI / 180)) * 100 - 100;
                 point.y = (float) -Math.sin(value * (Math.PI / 180)) * 100;
                 views.get(0).setTranslationX(point.x);
@@ -87,21 +99,12 @@ public class BaiduProgressLoading extends FrameLayout {
         valueAnimator.setDuration(750);
         valueAnimator.start();
 
+
         ValueAnimator valueAnimator2 = ValueAnimator.ofFloat(180, 0, -180);
         valueAnimator2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float value = (Float) animation.getAnimatedValue();
-                /**
-                 * ﻿﻿
-                 * 圆点坐标：(x0,y0)
-                 * 半径：r
-                 * 角度：a0
-                 * 则圆上任一点为：（x1,y1）
-                 * x1   =   x0   +   r   *   cos(ao   *   3.14   /180   )
-                 * y1   =   y0   +   r   *   sin(ao   *   3.14   /180   )
-                 */
-                /**第四步，根据每个菜单真实角度计算其坐标值**/
                 point.x = (float) Math.cos(value * (Math.PI / 180)) * 100 + 100;
                 point.y = (float) -Math.sin(value * (Math.PI / 180)) * 100;
                 views.get(0).setTranslationX(point.x);
@@ -119,16 +122,6 @@ public class BaiduProgressLoading extends FrameLayout {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float value = (Float) animation.getAnimatedValue();
-                /**
-                 * ﻿﻿
-                 * 圆点坐标：(x0,y0)
-                 * 半径：r
-                 * 角度：a0
-                 * 则圆上任一点为：（x1,y1）
-                 * x1   =   x0   +   r   *   cos(ao   *   3.14   /180   )
-                 * y1   =   y0   +   r   *   sin(ao   *   3.14   /180   )
-                 */
-                /**第四步，根据每个菜单真实角度计算其坐标值**/
                 point.x = (float) Math.cos(value * (Math.PI / 180)) * 100 - 100;
                 point.y = (float) -Math.sin(value * (Math.PI / 180)) * 100;
                 views.get(0).setTranslationX(point.x);
@@ -139,6 +132,12 @@ public class BaiduProgressLoading extends FrameLayout {
         valueAnimator3.setDuration(250);
         valueAnimator3.setStartDelay(1750);
         valueAnimator3.start();
+        /**动画组合->让左右同时执行**/
+        AnimatorSet   animatorSet = new AnimatorSet();
+        animatorSet.play(valueAnimator2).with(valueAnimator3);
+        animatorSet.setInterpolator(new LinearInterpolator());
+        animatorSet.start();
+
         valueAnimator3.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {

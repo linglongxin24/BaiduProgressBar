@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
@@ -19,10 +20,14 @@ import java.util.List;
  */
 
 public class BaiduLoadingView extends FrameLayout {
-
-    private int startIndex = 0;
-    private int[] src = new int[]{R.mipmap.dot_yellow, R.mipmap.dot_red, R.mipmap.dot_blue};
+    /**
+     * 存放三个小球的集合
+     */
     private List<ImageView> views = new ArrayList<>();
+    /**
+     * 同时播放动画的对象
+     */
+    private AnimatorSet animatorSet;
 
     public BaiduLoadingView(Context context) {
         super(context);
@@ -48,54 +53,73 @@ public class BaiduLoadingView extends FrameLayout {
         views.add(iv_blue);
     }
 
+    /**
+     * 初始化
+     */
     private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.baidu_progress_bar, this, true);
         assignViews();
-        startAnimator1();
-        startAnimator2();
-        startAnimator3();
+        startAnimator();
     }
 
-    private void startAnimator1() {
-        /**动画组合**/
+    private void startAnimator() {
+        /**动画组合->让左右同时执行**/
+        animatorSet = new AnimatorSet();
+        animatorSet.play(startAnimator1()).with(startAnimator2()).with(startAnimator3());
+        animatorSet.setInterpolator(new LinearInterpolator());
+        animatorSet.start();
+    }
+
+    private ObjectAnimator startAnimator1() {
+        /**对象的不同属性组合**/
         PropertyValuesHolder objectAnimatorTranslation = PropertyValuesHolder.ofFloat("translationX", -100, -200, -100, 0, 100, 200, 100, 0, -100);
         PropertyValuesHolder objectAnimatorScale = PropertyValuesHolder.ofFloat("scaleX", 0.5f, 1, 1.5f, 1, 0.5f, 1, 1.5f, 1, 0.5f);
         PropertyValuesHolder objectAnimatorScaleY = PropertyValuesHolder.ofFloat("scaleY", 0.5f, 1, 1.5f, 1, 0.5f, 1, 1.5f, 1, 0.5f);
-        /**同时播放两个动画**/
+        /**同时操作对象的两个属性动画**/
         ObjectAnimator objectAnimator = ObjectAnimator.ofPropertyValuesHolder(views.get(0), objectAnimatorTranslation, objectAnimatorScale, objectAnimatorScaleY);
         objectAnimator.setRepeatCount(-1);
         objectAnimator.setInterpolator(new LinearInterpolator());
         objectAnimator.setDuration(2000);
         objectAnimator.start();
+        return objectAnimator;
 
     }
 
-    private void startAnimator2() {
-        /**动画组合**/
+    private ObjectAnimator startAnimator2() {
+        /**对象的不同属性组合**/
         PropertyValuesHolder objectAnimatorTranslation = PropertyValuesHolder.ofFloat("translationX", 0, 100, 200, 100, 0, -100, -200, -100, 0);
         PropertyValuesHolder objectAnimatorScale = PropertyValuesHolder.ofFloat("scaleX", 1, 0.5f, 1, 1.5f, 1, 0.5f, 1, 1.5f, 1);
         PropertyValuesHolder objectAnimatorScaleY = PropertyValuesHolder.ofFloat("scaleY", 1, 0.5f, 1, 1.5f, 1, 0.5f, 1, 1.5f, 1);
-        /**同时播放两个动画**/
+        /**同时操作对象的两个属性动画**/
         ObjectAnimator objectAnimator = ObjectAnimator.ofPropertyValuesHolder(views.get(1), objectAnimatorTranslation, objectAnimatorScale, objectAnimatorScaleY);
         objectAnimator.setRepeatCount(-1);
         objectAnimator.setInterpolator(new LinearInterpolator());
         objectAnimator.setDuration(2000);
         objectAnimator.start();
+        return objectAnimator;
 
     }
 
-    private void startAnimator3() {
-        /**动画组合**/
+    private ObjectAnimator startAnimator3() {
+        /**对象的不同属性组合**/
         PropertyValuesHolder objectAnimatorTranslation = PropertyValuesHolder.ofFloat("translationX", 100, 0, -100, -200, -100, 0, 100, 200, 100);
         PropertyValuesHolder objectAnimatorScale = PropertyValuesHolder.ofFloat("scaleX", 1.5f, 1f, 0.5f, 1, 1.5f, 1, 0.5f, 1, 1.5f);
         PropertyValuesHolder objectAnimatorScaleY = PropertyValuesHolder.ofFloat("scaleY", 1.5f, 1f, 0.5f, 1, 1.5f, 1, 0.5f, 1, 1.5f);
-        /**同时播放两个动画**/
+        /**同时操作对象的两个属性动画**/
         ObjectAnimator objectAnimator = ObjectAnimator.ofPropertyValuesHolder(views.get(2), objectAnimatorTranslation, objectAnimatorScale, objectAnimatorScaleY);
         objectAnimator.setRepeatCount(-1);
         objectAnimator.setInterpolator(new LinearInterpolator());
         objectAnimator.setDuration(2000);
         objectAnimator.start();
-
+        return objectAnimator;
     }
 
+    /**
+     * 在View销毁时停止动画
+     */
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        animatorSet.cancel();
+    }
 }

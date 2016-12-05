@@ -18,18 +18,21 @@
         android:layout_gravity="center_horizontal"
         android:gravity="center" />
 
+    <cn.bluemobi.dylan.baiduprogressbar.BaiduProgressBar2
+        android:layout_width="500px"
+        android:layout_height="100px"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center" />
     <cn.bluemobi.dylan.baiduprogressbar.BaiduLoadingView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
         android:gravity="center" />
 
-    <cn.bluemobi.dylan.baiduprogressbar.BaiduProgressLoading
+    <cn.bluemobi.dylan.baiduprogressbar.BaiduProgressLoading2
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:layout_marginTop="10dp"
         android:gravity="center" />
 </LinearLayout>
