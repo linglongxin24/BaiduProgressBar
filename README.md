@@ -1,6 +1,8 @@
-#仿百度加载动画，一种优雅的Loading方式
+#【Android自定义View实战】之仿百度加载动画，一种优雅的Loading方式
 
 >无意中看到了百度的加载动画，看起来非常优雅，打算亲手造一个。
+
+ ![效果图](https://github.com/linglongxin24/BaiduProgressBar/blob/master/screenshots/baiduloading.gif?raw=true)
 
 
 
